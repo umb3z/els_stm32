@@ -31,11 +31,13 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "ee.h"
 #include "i2c-lcd.h"
 #include "menuPrincipale.h"
 #include "Impostazioni.h"
 #include "PosizioneMandrino.h"
 #include "VelocitaMandrino.h"
+#include "VirtualEeprom.h"
 
 /* USER CODE END Includes */
 
