@@ -57,7 +57,7 @@ unsigned char NORTON_gearbox;              //valore che memorizza la posizione c
 
 /* variabili relative ad encoder e motore stepper*/
 
-int one_turn_mandrel_steps = 1600;                //numero di step/giro dell'encoder mandrino (x4) (valore caricato da EEPROM)
+int one_turn_mandrel_steps = 0;                //numero di step/giro dell'encoder mandrino (x4) (valore caricato da EEPROM)
 
 float screw_pitch = 4.0;                          //passo della vite madre in mm (valore caricato da EEPROM)
 
@@ -187,7 +187,10 @@ int main(void)
 	  Error_Handler();
   if (HAL_TIM_IC_Start_IT(&htim2,TIM_CHANNEL_1)!= HAL_OK)
 	  Error_Handler();
-
+  if (!ee_init())
+	  Error_Handler();
+  //WriteToEEPROM();
+  LoadFromEEPROM();
 	lcd_init();
 
   /* USER CODE END 2 */

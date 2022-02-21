@@ -25,9 +25,9 @@ Core/Src/menuPrincipale.o: ../Core/Src/menuPrincipale.c \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h \
- ../Core/Inc/main.h ../Core/Inc/menuPrincipale.h \
+ ../Core/Inc/main.h ../Core/Inc/ee.h ../Core/Inc/menuPrincipale.h \
  ../Core/Inc/Impostazioni.h ../Core/Inc/PosizioneMandrino.h \
- ../Core/Inc/VelocitaMandrino.h
+ ../Core/Inc/VelocitaMandrino.h ../Core/Inc/VirtualEeprom.h
 
 ../Core/Inc/menuPrincipale.h:
 
@@ -85,6 +85,8 @@ Core/Src/menuPrincipale.o: ../Core/Src/menuPrincipale.c \
 
 ../Core/Inc/main.h:
 
+../Core/Inc/ee.h:
+
 ../Core/Inc/menuPrincipale.h:
 
 ../Core/Inc/Impostazioni.h:
@@ -92,3 +94,5 @@ Core/Src/menuPrincipale.o: ../Core/Src/menuPrincipale.c \
 ../Core/Inc/PosizioneMandrino.h:
 
 ../Core/Inc/VelocitaMandrino.h:
+
+../Core/Inc/VirtualEeprom.h:
