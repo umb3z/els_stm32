@@ -1,0 +1,2 @@
+VirtualEeprom.c:53:6:FactoryDefaultEEPROM	4	static
+VirtualEeprom.c:136:6:LoadFromEEPROM	4	static

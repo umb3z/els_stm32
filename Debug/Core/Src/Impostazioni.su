@@ -1,0 +1,3 @@
+Impostazioni.c:43:6:Impostazioni	24	static
+Impostazioni.c:131:6:ImpostazioniCambiaValore	40	static
+Impostazioni.c:258:7:ImpostazioniGetStringValueFromMenuIndex	32	static

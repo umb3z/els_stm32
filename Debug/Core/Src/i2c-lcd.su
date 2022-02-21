@@ -1,0 +1,8 @@
+i2c-lcd.c:8:6:lcd_send_cmd	32	static
+i2c-lcd.c:21:6:lcd_send_data	32	static
+i2c-lcd.c:34:6:lcd_clear	16	static
+i2c-lcd.c:41:6:lcd_init	8	static
+i2c-lcd.c:66:6:lcd_send_string	16	static
+i2c-lcd.c:73:6:lcd_cursor_pos	48	static
+i2c-lcd.c:82:6:lcd_send_char	16	static
+i2c-lcd.c:88:6:lcd_create_char	24	static
