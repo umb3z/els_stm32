@@ -31,7 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "ee.h"
+#include "FLASH_PAGE_F1.h"
 #include "i2c-lcd.h"
 #include "menuPrincipale.h"
 #include "Impostazioni.h"
@@ -64,12 +64,12 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define CHANNEL_A_Pin GPIO_PIN_6
+#define CHANNEL_A_GPIO_Port GPIOA
+#define CHANNEL_B_Pin GPIO_PIN_7
+#define CHANNEL_B_GPIO_Port GPIOA
 #define MENU_RESET_Pin GPIO_PIN_15
 #define MENU_RESET_GPIO_Port GPIOB
-#define CHANNEL_A_Pin GPIO_PIN_8
-#define CHANNEL_A_GPIO_Port GPIOA
-#define CHANNEL_B_Pin GPIO_PIN_9
-#define CHANNEL_B_GPIO_Port GPIOA
 #define MENU_ESC_Pin GPIO_PIN_15
 #define MENU_ESC_GPIO_Port GPIOA
 #define MENU_ENCODER_A_Pin GPIO_PIN_3
