@@ -1,7 +1,2 @@
-VirtualEeprom.c:93:6:FactoryDefaultEEPROM	4	static
-VirtualEeprom.c:142:6:WriteToEEPROM	72	static
-VirtualEeprom.c:246:6:LoadFromEEPROM	80	static
-VirtualEeprom.c:271:14:value_quattro_int	16	static
-VirtualEeprom.c:278:7:value_quattro_float	16	static
-VirtualEeprom.c:285:14:value_otto_int	16	static
-VirtualEeprom.c:296:5:value_due_int	16	static
+VirtualEeprom.c:51:6:WriteToEEPROM	4	static
+VirtualEeprom.c:82:6:LoadFromEEPROM	4	static

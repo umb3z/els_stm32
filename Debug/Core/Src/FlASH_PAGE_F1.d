@@ -1,4 +1,5 @@
-Core/Src/ee.o: ../Core/Src/ee.c ../Core/Inc/ee.h ../Core/Inc/main.h \
+Core/Src/FlASH_PAGE_F1.o: ../Core/Src/FlASH_PAGE_F1.c \
+ ../Core/Inc/FLASH_PAGE_F1.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h \
  ../Core/Inc/stm32f1xx_hal_conf.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rcc.h \
@@ -23,15 +24,9 @@ Core/Src/ee.o: ../Core/Src/ee.c ../Core/Inc/ee.h ../Core/Inc/main.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h \
- ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h \
- ../Core/Inc/ee.h ../Core/Inc/i2c-lcd.h ../Core/Inc/menuPrincipale.h \
- ../Core/Inc/Impostazioni.h ../Core/Inc/PosizioneMandrino.h \
- ../Core/Inc/VelocitaMandrino.h ../Core/Inc/VirtualEeprom.h \
- ../Core/Inc/eeConfig.h
+ ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h
 
-../Core/Inc/ee.h:
-
-../Core/Inc/main.h:
+../Core/Inc/FLASH_PAGE_F1.h:
 
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:
 
@@ -82,19 +77,3 @@ Core/Src/ee.o: ../Core/Src/ee.c ../Core/Inc/ee.h ../Core/Inc/main.h \
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h:
 
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h:
-
-../Core/Inc/ee.h:
-
-../Core/Inc/i2c-lcd.h:
-
-../Core/Inc/menuPrincipale.h:
-
-../Core/Inc/Impostazioni.h:
-
-../Core/Inc/PosizioneMandrino.h:
-
-../Core/Inc/VelocitaMandrino.h:
-
-../Core/Inc/VirtualEeprom.h:
-
-../Core/Inc/eeConfig.h:
