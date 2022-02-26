@@ -6,8 +6,9 @@ static char *MenuPosizioneAngolare[] = { "*POSIZIONE ANGOLARE*",
 extern int one_turn_mandrel_steps;
 extern char buff[];
 extern uint32_t steps;
-extern TIM_HandleTypeDef htim3;
+extern uint32_t steps2;
 extern volatile int giri;
+extern TIM_HandleTypeDef htim4;
 
 void PosizioneAngolare() {
 	float Degrees = 0.00;                       //variable used to store degrees
@@ -32,7 +33,7 @@ void PosizioneAngolare() {
 		Degrees = ((float) ((abs(steps) % one_turn_mandrel_steps))
 				* AngularRatio);
 		steps = TIM3->CNT;
-
+		steps2 = __HAL_TIM_GET_COUNTER(&htim4);
 
 		if (steps < 0)
 			Degrees = 360 - Degrees;
@@ -43,12 +44,16 @@ void PosizioneAngolare() {
 			sprintf(buff,"gradi:%.3f" , Degrees);
 			lcd_send_string(buff);
 			old_Degrees = Degrees;
+
+			lcd_cursor_pos(1, 2);
+			sprintf(buff,"steps2:%lu" , steps2);
+			lcd_send_string(buff);
+
 			HAL_Delay(300);
 
 		}
-		lcd_cursor_pos(1, 2);
-		sprintf(buff,"giri:%d" , giri);
-		lcd_send_string(buff);
+
+		HAL_Delay(300);
 	}
 	HAL_Delay(300);
 }

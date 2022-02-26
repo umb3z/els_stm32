@@ -64,6 +64,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define ONBOARD_LED_Pin GPIO_PIN_13
+#define ONBOARD_LED_GPIO_Port GPIOC
 #define CHANNEL_A_Pin GPIO_PIN_6
 #define CHANNEL_A_GPIO_Port GPIOA
 #define CHANNEL_B_Pin GPIO_PIN_7
@@ -80,6 +82,10 @@ void Error_Handler(void);
 #define MENU_ENCODER_B_EXTI_IRQn EXTI4_IRQn
 #define MENU_BUTTON_Pin GPIO_PIN_5
 #define MENU_BUTTON_GPIO_Port GPIOB
+#define ENCODER2_A_Pin GPIO_PIN_6
+#define ENCODER2_A_GPIO_Port GPIOB
+#define ENCODER2_B_Pin GPIO_PIN_7
+#define ENCODER2_B_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 #define MaxSteps 800   //dimension of the step array - this can be adjusted to increase the maximum pitch according to the available RAM
 /* USER CODE END Private defines */
