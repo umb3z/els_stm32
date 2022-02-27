@@ -31,97 +31,87 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+/*STM32 VARIABILI*/
 volatile int menuPosition;
 volatile int lastEncodedMenu;
-volatile float rpm;
-
-
-uint32_t counterMandrino;
-int16_t countMandrino;
-int16_t positionMandrino;
-int speedMandrino;
-volatile int giri = 0;
+/* Measure RPM */
+volatile uint32_t rpmValue = 0;
+volatile uint32_t rpmOldValue = 0;
+volatile float rpm = 0;
+/*END STM32 VARIABILI*/
 
 
 
+char buff[21]; //buffer per memorizzare le stringhe lette dalla flash e visualizzate sul display
 
-char buff[21];                                    //buffer per memorizzare le stringhe lette dalla flash e visualizzate sul display
-
-bool mm_min = false;                              //variabile che determina la modalita' di avanzamento: true = mm/min; false = cent/giro
+bool mm_min = false; //variabile che determina la modalita' di avanzamento: true = mm/min; false = cent/giro
 
 /* VALORI EEPROM (che non c'è lol)*/
-unsigned int av_carro[] = {400,400,400,400};                      //valore di avanzamento in centesimi del carro (valore caricato da EEPROM)
-unsigned int av_trasv[] = {400,400,400,400};                      //valore di avanzamento in centesimi del carro (valore caricato da EEPROM)
+unsigned int av_carro[] = { 400, 400, 400, 400 }; //valore di avanzamento in centesimi del carro (valore caricato da EEPROM)
+unsigned int av_trasv[] = { 400, 400, 400, 400 }; //valore di avanzamento in centesimi del carro (valore caricato da EEPROM)
 
-unsigned char NORTON_gearbox;              //valore che memorizza la posizione corrente della scatola norton (usato come indice per gli array qui sopra)
+unsigned char NORTON_gearbox; //valore che memorizza la posizione corrente della scatola norton (usato come indice per gli array qui sopra)
 
 /* variabili relative ad encoder e motore stepper*/
 
-int one_turn_mandrel_steps = 1600;                //numero di step/giro dell'encoder mandrino (x4) (valore caricato da EEPROM)
+int one_turn_mandrel_steps = 1600; //numero di step/giro dell'encoder mandrino (x4) (valore caricato da EEPROM)
 
-float screw_pitch = 4.0;                          //passo della vite madre in mm (valore caricato da EEPROM)
+float screw_pitch = 4.0; //passo della vite madre in mm (valore caricato da EEPROM)
 
-unsigned int one_turn_screw_steps = 800;          //numero di step/giro del motore stepper sulla vite (valore caricato da EEPROM)
-												  //nel mio caso 200*2*2 (step motore * half-step driver * demoltiplica hardware)
+unsigned int one_turn_screw_steps = 800; //numero di step/giro del motore stepper sulla vite (valore caricato da EEPROM)
+//nel mio caso 200*2*2 (step motore * half-step driver * demoltiplica hardware)
 
-float single_step_pitch = 4.0/800; 						    //valore in micron di movimento del carro ad ogni step della vite madre
-															//calcolato al termine della funzione LoadFromEEPROM()
-															//calculates the linear movement (in mm) of the carriage for a single step of the stepper motor
+float single_step_pitch = 4.0 / 800; //valore in micron di movimento del carro ad ogni step della vite madre
+									 //calcolato al termine della funzione LoadFromEEPROM()
+									 //calculates the linear movement (in mm) of the carriage for a single step of the stepper motor
 
-unsigned int AccelerationDelay=100;           //ritardo accelerazione del motore stepper - varibile letta da EEPROM
-unsigned int DecelerationDelay=100;           //ritardo decelerazione del motore stepper - varibile letta da EEPROM
+unsigned int AccelerationDelay = 100; //ritardo accelerazione del motore stepper - varibile letta da EEPROM
+unsigned int DecelerationDelay = 100; //ritardo decelerazione del motore stepper - varibile letta da EEPROM
 
-bool CW = true;                     //TRUE se la rotazione standard della vite e' in senso orario (orario trascina il carro verso il madnrino). variabile letta da EEPROM
-bool CCW = false;                   //TRUE se la rotazione standard della vite e' in senso anti-orario (anti-orario trascina il carro verso il madnrino) variabile letta da EEPROM
+bool CW = true; //TRUE se la rotazione standard della vite e' in senso orario (orario trascina il carro verso il madnrino). variabile letta da EEPROM
+bool CCW = false; //TRUE se la rotazione standard della vite e' in senso anti-orario (anti-orario trascina il carro verso il madnrino) variabile letta da EEPROM
 
-int thread_offset_steps=400;                  //offset per operazione di filettatura. Indica quanti passi prima dell'inizio del filetto si deve posizionare la vite
+int thread_offset_steps = 400; //offset per operazione di filettatura. Indica quanti passi prima dell'inizio del filetto si deve posizionare la vite
 unsigned long MaxStepperSpeed = 100; //massima velocit di rotazione ammessa per il motore stepper. Variabile letta da EEPROM
 /* FINE VALORI EEPROM */
-float SingleStepFeed;                       //valore in millimetri di movimento del carro ad ogni step della barra
-                                            //calcolato nelle funzioni di avanzamento dove richiesto ed in base alla posizione del cambio norton
-float distance = 0.00;                      //distanza in mm usata nella funzione FilettaturaToPosition()
+float SingleStepFeed; //valore in millimetri di movimento del carro ad ogni step della barra
+//calcolato nelle funzioni di avanzamento dove richiesto ed in base alla posizione del cambio norton
+float distance = 0.00; //distanza in mm usata nella funzione FilettaturaToPosition()
 // fine variabili relative ad encoder e motore stepper
 
-// mixed variables
-long OldSpeedTimer;
-long OldPos = 0;
-long NewPos = 0;
-//end mixed variables
 
 //variabili usate per il calcolo della progressione di filettatura
-char sequenza [MaxSteps];              //array usato per i calcolo della sequenza passi encoder/stepper. la lunghezza di questo array limita il massimo passo eseguibile in filettatura
-                                       //max_passo = passo_vite*(800/passi_stepper_giro)
-int numero_passi = 0;                  //variabile che memorizza il numero dei passi stepper per ogni giro mandrino (usata in filettatura e avanzamento)
+char sequenza[MaxSteps]; //array usato per i calcolo della sequenza passi encoder/stepper. la lunghezza di questo array limita il massimo passo eseguibile in filettatura
+//max_passo = passo_vite*(800/passi_stepper_giro)
+int numero_passi = 0; //variabile che memorizza il numero dei passi stepper per ogni giro mandrino (usata in filettatura e avanzamento)
 int pointer = 0;                       //puntatore per array "sequenza"
-bool Metric = true;                 //se vero il passo impostato in filettatura e' metrico, se Falso e' imperial
-float thread_pitch = 1.00;                  //passo impostato per la filettatura in mm (standard 1.00mm)
-char TPInch = 20;                              //passo impostato per la filettatura in pollici (standard 20 TPI)
+bool Metric = true; //se vero il passo impostato in filettatura e' metrico, se Falso e' imperial
+float thread_pitch = 1.00; //passo impostato per la filettatura in mm (standard 1.00mm)
+char TPInch = 20; //passo impostato per la filettatura in pollici (standard 20 TPI)
 //fine variabili usate per il calcolo della progressione di filettatura
 
 //variabili relative alla lettura dell'encoder
-uint32_t steps = 0;                             //passi encoder relativi - variabile usata come appoggio in filettatura e avanzamento
-uint32_t steps2 = 0;                             //passi encoder relativi - variabile usata come appoggio in filettatura e avanzamento
+uint32_t steps = 0; //passi encoder relativi - variabile usata come appoggio in filettatura e avanzamento
+uint32_t steps2 = 0; //passi encoder relativi - variabile usata come appoggio in filettatura e avanzamento
 
 volatile long absolute_encoder_steps = 0;  //passi encoder assoluti
-bool step_flag;                         //Flag per detarminare se il passo encode  avvenuto (usata nella rountine di interrupt di lettura dell'nencoder)
+bool step_flag; //Flag per detarminare se il passo encode  avvenuto (usata nella rountine di interrupt di lettura dell'nencoder)
 int passi_sequenza = 0;
-char encoder[] = {0, 1, -1, 0, -1, 0, 0, 1, 1, 0, 0, -1, 0, -1, 1, 0};  //array da 16 valori usato per "muovere" i passi enoder nella rountine interrupt di filettatura
-bool sviluppo_filetto = true;      //Flag che detrmina il verso id filettatura: TRUE = DESTRO; FALSE = SINISTRO
+char encoder[] = { 0, 1, -1, 0, -1, 0, 0, 1, 1, 0, 0, -1, 0, -1, 1, 0 }; //array da 16 valori usato per "muovere" i passi enoder nella rountine interrupt di filettatura
+bool sviluppo_filetto = true; //Flag che detrmina il verso id filettatura: TRUE = DESTRO; FALSE = SINISTRO
 //fine variabili relative alla lettura dell'encoder
 
 // Stepper motor variables
 //bool Direction = 1;        //variabile usata per determinare il senso di rotazione momentaneo del motore stepper e incrementare o decrementare i passi
 int passi_stepper = 0;
-unsigned long Speed;           //memorizza la velocit corrente del motore stepper in giri al minuto - se = 0 lo stepper e' fermo
 
 
-volatile unsigned int TOP = 65535;        //valore usato per scrivere il registro ICR1 che determina la frequenza del PWM che regola la velocit di rotazione del motore stepper
-volatile long absolute_steps = 0;         //passi stepper assoluti
-volatile long encoder_index = 0;         //passi stepper assoluti
+volatile unsigned int TOP = 65535; //valore usato per scrivere il registro ICR1 che determina la frequenza del PWM che regola la velocit di rotazione del motore stepper
 
-int feed = 1;                             //valore corrente avanzamneto usato nella funzione di avanzamneto
+
+int feed = 1;  //valore corrente avanzamneto usato nella funzione di avanzamneto
 bool SHOW_Impostazioni = false;
+
 
 /* USER CODE END PD */
 
@@ -152,14 +142,25 @@ static void MX_TIM4_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-// Callback: timer has rolled over
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-	if(htim->Instance == TIM4)
-	    {
-		HAL_GPIO_TogglePin(ONBOARD_LED_GPIO_Port, ONBOARD_LED_Pin);
-	    }
 
+// Callback: timer has rolled over
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+
+	if (htim->Instance == TIM4) {
+		HAL_GPIO_TogglePin(ONBOARD_LED_GPIO_Port, ONBOARD_LED_Pin);
+	}
+	if (htim->Instance == TIM3) {
+		rpmValue = HAL_GetTick();
+		if (rpmValue != rpmOldValue ){
+			uint32_t time_elapsed = rpmValue - rpmOldValue;
+			rpm = 1600 * (60000.f / time_elapsed / 1600);
+			rpmOldValue = rpmValue;
+
+		}else{
+			rpm=0;
+		}
+		rpmValue = HAL_GetTick();
+	}
 }
 /* USER CODE END 0 */
 
@@ -195,17 +196,17 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
-  if (HAL_TIM_Encoder_Start_IT(&htim3, TIM_CHANNEL_ALL) != HAL_OK)
-	  Error_Handler();
-  if (HAL_TIM_Encoder_Start_IT(&htim4, TIM_CHANNEL_ALL) != HAL_OK)
-    	  Error_Handler();
-  if (HAL_TIM_Base_Start_IT(&htim4) != HAL_OK)
-    	  Error_Handler();
-
-
+	if (HAL_TIM_Encoder_Start_IT(&htim3, TIM_CHANNEL_ALL) != HAL_OK)
+		Error_Handler();
+	if (HAL_TIM_Encoder_Start_IT(&htim4, TIM_CHANNEL_ALL) != HAL_OK)
+		Error_Handler();
+	if (HAL_TIM_Base_Start_IT(&htim4) != HAL_OK)
+		Error_Handler();
+	if (HAL_TIM_Base_Start_IT(&htim3) != HAL_OK)
+		Error_Handler();
 
 //   WriteToEEPROM();
-  LoadFromEEPROM();
+	LoadFromEEPROM();
 	lcd_init();
 
   /* USER CODE END 2 */
@@ -214,26 +215,34 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 	while (1) {
 		char scelta;
-				  while (true)
-				  {
+		while (true) {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
 
-				    scelta = Principale();
-				    switch (scelta) {
-				    case 1: lcd_clear(); Impostazioni(); break;
-				    case 6: lcd_clear(); PosizioneAngolare(); break;
-				    case 5: lcd_clear(); MandrelSpeed(); break;
-				      /*case 2: lcd.clear(); Avanzamento(); break;
-				      case 3: lcd.clear(); Filettatura(); break;
-				      case 4: lcd.clear(); MovimentoLibero(); break;
-				      */
-				    }
-				  }
-    /* USER CODE END WHILE */
+			scelta = Principale();
+			switch (scelta) {
+			case 1:
+				lcd_clear();
+				Impostazioni();
+				break;
+			case 6:
+				lcd_clear();
+				PosizioneAngolare();
+				break;
+			case 5:
+				lcd_clear();
+				MandrelSpeed();
+				break;
+				/*case 2: lcd.clear(); Avanzamento(); break;
+				 case 3: lcd.clear(); Filettatura(); break;
+				 case 4: lcd.clear(); MovimentoLibero(); break;
+				 */
+			}
+		}
+		/* USER CODE END WHILE */
 
-    /* USER CODE BEGIN 3 */
+		/* USER CODE BEGIN 3 */
 	}
   /* USER CODE END 3 */
 }
